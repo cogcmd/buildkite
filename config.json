@@ -9,11 +9,11 @@
                  "adapter": "slack",
                  "path": "templates/hello_world"}],
   "permissions": ["buildkite:view", "buildkite:build"],
-  "rules": ["when command is buildkite:build and arg[0] == 'start' must have buildkite:build",
-            "when command is buildkite:build and arg[0] == 'restart' must have buildkite:build",
-            "when command is buildkite:build and arg[0] == 'list' must have buildkite:view",
-            "when command is buildkite:build and arg[0] == 'status' must have buildkite:view",
-            "when command is buildkite:build and arg[0] == 'logs' must have buildkite:view"],
+  "rules": ["when command is buildkite:build with arg[0] == 'start' must have buildkite:build",
+            "when command is buildkite:build with arg[0] == 'restart' must have buildkite:build",
+            "when command is buildkite:build with arg[0] == 'list' must have buildkite:view",
+            "when command is buildkite:build with arg[0] == 'status' must have buildkite:view",
+            "when command is buildkite:build with arg[0] == 'logs' must have buildkite:view"],
   "commands": [
     {
       "name": "build",
