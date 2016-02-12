@@ -21,10 +21,8 @@
       "executable": "commands/build.py",
       "enforcing": true,
       "calling_convention": "bound",
-      "env_vars": {
-        "PYTHONPATH": "$INSTALL_PATH"
-      },
-      "documentation": "buildkite:build [start|restart|status] ...",
+      "env_vars": {},
+      "documentation": "buildkite:build [list|status] ...",
       "options": [
         {
           "type": "string",
