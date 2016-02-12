@@ -3,25 +3,36 @@
 import json
 import os
 import requests
-import cog
+import sys
+from cog.logger import Logger
+import cog.output
+import cog.env
 
 def usage_error():
-    cog.send_error("Must specify one of the following actions: list or status")
-    os.exit(1)
+    cog.output.send_error("Must specify one of the following actions: list or status")
+    cog.output.finish(error=True)
 
 def send_api_error(reason):
-    cog.send_error("Buildkite API returned error: %s" (reason))
-    os.exit(1)
+    cog.output.send_error("Buildkite API returned '%s'." % (reason))
+    cog.output.finish(error=True)
 
 def api_token():
-    return os.getenv("API_TOKEN")
+    api_token = cog.env.get_config("api_token")
+    if api_token is None:
+        cog.output.send_error("Missing configuration variable API_TOKEN.")
+        cog.output.finish(error=True)
+    return api_token
 
 def org_name():
-    return os.getenv("ORG_NAME")
+    org_name = cog.env.get_config("org_name")
+    if org_name is None:
+        cog.output.send_error("Missing configuration variable ORG_NAME.")
+        cog.output.finish(error=True)
+    return org_name
 
 def resolve_github_repo(project):
     url = "https://api.buildkite.com/v2/organizations/%s/pipelines" % (org_name())
-    headers = {"Authorization", "Bearer %s" % (api_token())}
+    headers = {"Authorization": "Bearer %s" % (api_token())}
     resp = requests.get(url, headers=headers)
     if not resp.ok:
         send_api_error(resp.reason)
@@ -31,24 +42,27 @@ def resolve_github_repo(project):
     return None
 
 def list_builds():
-    project_name = get_option("project")
-    if project_name.find("/"):
+    project_name = cog.env.get_option("project")
+    if project_name.find("/") > -1:
         project = resolve_github_repo(project_name)
     else:
         project = project_name
     if project is None:
-        cog.send_error("Buildkite pipeline for github repo %s not found" % (project_name))
-        os.exit(1)
-    url = "https://api.buildkite.com/v2/organization/%s/pipelines/%s/builds" % (org_name(), project)
-    headers = {"Authorization", "Bearer %s" % (api_token())}
+        cog.output.send_error("Buildkite pipeline for github repo %s not found" % (project_name))
+        cog.output.finish(error=True)
+    url = "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds" % (org_name(), project)
+    headers = {"Authorization": "Bearer %s" % (api_token())}
     resp = requests.get(url, headers=headers)
     if not resp.ok:
         send_api_error(resp.reason)
     builds = sorted(resp.json(), key=lambda build: (build["created_at"], build["finished_at"]), reverse=True)
-    cog.send_json(builds[0:5])
 
 if __name__ == "__main__":
-    action = cog.get_arg(0)
+    Logger.debug("Debug message")
+    Logger.info("Info message")
+    Logger.warn("Warn message")
+    Logger.error("Error message")
+    action = cog.env.get_arg(0)
     if action == None:
         usage_error()
     else:
@@ -59,3 +73,4 @@ if __name__ == "__main__":
             list_builds()
         elif action == "status":
             build_status()
+        cog.output.finish()
