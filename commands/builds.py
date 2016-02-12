@@ -38,30 +38,60 @@ def resolve_github_repo(project):
         send_api_error(resp.reason)
     for pipeline in resp.json():
         if pipeline["repository"].find(project) > -1:
-            return pipeline["name"]
+            return pipeline["name"].lower()
     return None
 
-def list_builds():
+def get_project_name():
     project_name = cog.env.get_option("project")
     if project_name.find("/") > -1:
-        project = resolve_github_repo(project_name)
-    else:
-        project = project_name
-    if project is None:
+        project_name = resolve_github_repo(project_name)
+
+    if project_name is None:
         cog.output.send_error("Buildkite pipeline for github repo %s not found" % (project_name))
         cog.output.finish(error=True)
-    url = "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds" % (org_name(), project)
+    else:
+        return project_name
+
+def branch_name():
+    return cog.env.get_option("branch", default="master")
+
+def make_build_result(project, build):
+    return {"url": build["web_url"],
+            "project": project,
+            "started": build["started_at"],
+            "finished": build["finished_at"],
+            "status": build["state"],
+            "branch": build["branch"]}
+
+def list_builds():
+    project = get_project_name()
+    url = "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds?branch=%s" % (org_name(), project, branch_name())
     headers = {"Authorization": "Bearer %s" % (api_token())}
     resp = requests.get(url, headers=headers)
     if not resp.ok:
         send_api_error(resp.reason)
     builds = sorted(resp.json(), key=lambda build: (build["created_at"], build["finished_at"]), reverse=True)
+    builds = builds[0:4]
+    result = []
+    for build in builds:
+        result.append(make_build_result(project, build))
+    cog.output.send_json(result)
+
+def build_status():
+    project = get_project_name()
+    url = "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds?branch=%s" % (org_name(), project, branch_name())
+    headers = {"Authorization": "Bearer %s" % (api_token())}
+    resp = requests.get(url, headers=headers)
+    if not resp.ok:
+        send_api_error(resp.reason)
+    builds = sorted(resp.json(), key=lambda build: build["started_at"], reverse=True)
+    if len(builds) == 0:
+        cog.output.send_json([])
+    else:
+        cog.output.send_json(make_build_result(project, builds[0]), template="status")
+
 
 if __name__ == "__main__":
-    Logger.debug("Debug message")
-    Logger.info("Info message")
-    Logger.warn("Warn message")
-    Logger.error("Error message")
     action = cog.env.get_arg(0)
     if action == None:
         usage_error()

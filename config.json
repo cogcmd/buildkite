@@ -5,24 +5,24 @@
     "install": "bin/install.sh",
     "uninstall": "bin/uninstall.sh"
   },
-  "templates": [{"name": "hello",
+  "templates": [{"name": "status",
                  "adapter": "slack",
-                 "path": "templates/hello_world"}],
+                 "path": "templates/status.mustache"}],
   "permissions": ["buildkite:view", "buildkite:build"],
-  "rules": ["when command is buildkite:build with arg[0] == 'start' must have buildkite:build",
-            "when command is buildkite:build with arg[0] == 'restart' must have buildkite:build",
-            "when command is buildkite:build with arg[0] == 'list' must have buildkite:view",
-            "when command is buildkite:build with arg[0] == 'status' must have buildkite:view",
-            "when command is buildkite:build with arg[0] == 'logs' must have buildkite:view"],
+  "rules": ["when command is buildkite:builds with arg[0] == 'start' must have buildkite:build",
+            "when command is buildkite:builds with arg[0] == 'restart' must have buildkite:build",
+            "when command is buildkite:builds with arg[0] == 'list' must have buildkite:view",
+            "when command is buildkite:builds with arg[0] == 'status' must have buildkite:view",
+            "when command is buildkite:builds with arg[0] == 'logs' must have buildkite:view"],
   "commands": [
     {
-      "name": "build",
+      "name": "builds",
       "version": "0.1",
-      "executable": "commands/build.py",
+      "executable": "commands/builds.py",
       "enforcing": true,
       "calling_convention": "bound",
       "env_vars": {},
-      "documentation": "buildkite:build [list|status] ...",
+      "documentation": "buildkite:builds [list|status] ...",
       "options": [
         {
           "type": "string",
@@ -30,9 +30,9 @@
           "name": "project"
         },
         {
-          "type": "int",
+          "type": "string",
           "required": false,
-          "name": "build"
+          "name": "branch"
         }
       ]
     }
