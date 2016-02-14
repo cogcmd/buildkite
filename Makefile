@@ -1,7 +1,7 @@
 BUILD_DIR          = _build
 BUNDLE_NAME        = buildkite
 WORK_DIR           = $(BUILD_DIR)/$(BUNDLE_NAME)
-SRC_DIRS           = bin commands meta templates
+SRC_DIRS           = bin commands meta templates lib
 SRC_FILES          = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*))
 
 .PHONY: make-bundle validate-config
@@ -12,7 +12,7 @@ clean:
 	rm -rf $(BUNDLE_NAME).cog _build manifest.json
 	find . -name "*.pyc" | xargs rm -v
 
-$(BUNDLE_NAME).cog: manifest.json config.json $(SRC_FILES)
+$(BUNDLE_NAME).cog: Makefile manifest.json config.json $(SRC_FILES)
 	make validate-config
 	mkdir -p $(WORK_DIR)
 	cp manifest.json config.json $(WORK_DIR)
