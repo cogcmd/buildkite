@@ -1,6 +1,6 @@
 #!/bin/sh
 
-install_dir=`dirname $0`
+install_dir=`pwd`
 
 pipcmd=`which pip`
 
@@ -9,4 +9,4 @@ if [ "${pipcmd}" == "" ]; then
   exit 1
 fi
 
-sudo -H ${pipcmd} install -r ${install_dir}/../meta/requirements.txt
+sudo -H ${pipcmd} install -r ${install_dir}/meta/requirements.txt
