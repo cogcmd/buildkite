@@ -2,7 +2,8 @@
   "bundle": {
     "name": "buildkite",
     "type": "foreign",
-    "install": "bin/install.sh"
+    "install": "bin/install.sh",
+    "uninstall": "bin/uninstall.sh"
   },
   "templates": [{"name": "status",
                  "adapter": "slack",
