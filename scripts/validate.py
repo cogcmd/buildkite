@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-import json
+import yaml
 import sys
 
 if __name__ == "__main__":
-    with open("config.json", "r") as f:
+    with open("config.yml", "r") as f:
         try:
             contents = f.read()
-            json.loads(contents)
-            print "config.json validated successfully."
+            yaml.load(contents)
+            print "config.yml validated successfully."
         except ValueError as e:
-            print "config.json failed validation: %s" % (e.message)
+            print "config.yml failed validation: %s" % (e.message)
             sys.exit(2)
 
