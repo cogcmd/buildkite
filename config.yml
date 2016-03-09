@@ -1,43 +1,38 @@
-{
-  "bundle": {
-    "name": "buildkite",
-    "type": "foreign",
-    "install": "bin/install.sh",
-    "uninstall": "bin/uninstall.sh"
-  },
-  "templates": [{"name": "status",
-                 "adapter": "slack",
-                 "path": "templates/status.mustache"},
-                {"name": "list",
-                 "adapter": "slack",
-                 "path": "templates/list.mustache"}],
-  "permissions": ["buildkite:view", "buildkite:build"],
-  "rules": ["when command is buildkite:builds with arg[0] == 'start' must have buildkite:build",
-            "when command is buildkite:builds with arg[0] == 'restart' must have buildkite:build",
-            "when command is buildkite:builds with arg[0] == 'list' must have buildkite:view",
-            "when command is buildkite:builds with arg[0] == 'status' must have buildkite:view",
-            "when command is buildkite:builds with arg[0] == 'logs' must have buildkite:view"],
-  "commands": [
-    {
-      "name": "builds",
-      "version": "0.1",
-      "executable": "commands/builds.py",
-      "enforcing": true,
-      "calling_convention": "bound",
-      "env_vars": {"PYTHONPATH": "$INSTALL_PATH/lib"},
-      "documentation": "buildkite:builds [list|status] ...",
-      "options": [
-        {
-          "type": "string",
-          "required": true,
-          "name": "project"
-        },
-        {
-          "type": "string",
-          "required": false,
-          "name": "branch"
-        }
-      ]
-    }
-  ]
-}
+---
+bundle:
+  name: buildkite
+  type: foreign
+  install: bin/install.sh
+  uninstall: bin/uninstall.sh
+templates:
+- name: status
+  adapter: slack
+  path: templates/status.mustache
+- name: list
+  adapter: slack
+  path: templates/list.mustache
+permissions:
+- buildkite:view
+- buildkite:build
+rules:
+- when command is buildkite:builds with arg[0] == 'start' must have buildkite:build
+- when command is buildkite:builds with arg[0] == 'restart' must have buildkite:build
+- when command is buildkite:builds with arg[0] == 'list' must have buildkite:view
+- when command is buildkite:builds with arg[0] == 'status' must have buildkite:view
+- when command is buildkite:builds with arg[0] == 'logs' must have buildkite:view
+commands:
+- name: builds
+  version: '0.1'
+  executable: commands/builds.py
+  enforcing: true
+  calling_convention: bound
+  env_vars:
+    PYTHONPATH: "$INSTALL_PATH/lib"
+  documentation: buildkite:builds [list|status] ...
+  options:
+  - type: string
+    required: true
+    name: project
+  - type: string
+    required: false
+    name: branch
