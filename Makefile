@@ -13,7 +13,7 @@ clean:
 	find . -name "*.pyc" | xargs rm -v
 
 install:
-	pip install -r meta/requirements.txt
+	pip install -r meta/requirements.txt --user
 
 $(BUNDLE_NAME).cog: Makefile manifest.json config.yml $(SRC_FILES)
 	make validate-config
