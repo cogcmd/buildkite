@@ -2,8 +2,8 @@
 
 ## Building
 
-To build the bundle you will need python, pip and PyYAML installed. Then just run the following
+To build the bundle you will need python, pipinstalled. Then just run the following
 
 ```
-make
+make install && make
 ```

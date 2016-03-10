@@ -12,6 +12,9 @@ clean:
 	rm -rf $(BUNDLE_NAME).cog _build manifest.json
 	find . -name "*.pyc" | xargs rm -v
 
+install:
+	pip install -r meta/requirements.txt
+
 $(BUNDLE_NAME).cog: Makefile manifest.json config.yml $(SRC_FILES)
 	make validate-config
 	mkdir -p $(WORK_DIR)
