@@ -1,9 +1,5 @@
 # Buildkite bundle for Cog
 
-## Building
+**Notice**
 
-To build the bundle you will need python, pipinstalled. Then just run the following
-
-```
-make install && make
-```
+The current Buildkite bundle has not been updated in a while, and does not run under current versions of Cog. A rewrite of the bundle by Operable is currently planned, however.
